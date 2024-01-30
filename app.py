@@ -1,5 +1,6 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_file
 from pymongo import MongoClient
+import os
 
 app = Flask(__name__)
 
@@ -35,6 +36,7 @@ def upload_article():
         return jsonify({'error': str(e)}), 500
 
 @app.route('/articles', methods=['GET'])
+@app.route('/articles/', methods=['GET'])
 def list_articles():
     try:
         # Définir la page par défaut et le nombre d'articles par page
@@ -66,7 +68,28 @@ def describe_article(id):
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-# You can add more routes as needed
+@app.route('/text/<id>.txt', methods=['GET'])
+def get_article_summary(id):
+    try:
+        # Recherche de l'article dans la base de données
+        article = entries_collection.find_one({'id': id}, {'_id': 0, 'summary': 1})
+
+        if article:
+            # Création d'un fichier texte temporaire pour le résumé
+            temp_file_path = f'{id}_summary.txt'
+            with open(temp_file_path, 'w') as temp_file:
+                temp_file.write(article['summary'])
+
+            # Envoi du fichier en réponse
+            return send_file(temp_file_path, as_attachment=True)
+        else:
+            return jsonify({'error': f'Article with ID {id} not found'}), 404
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    finally:
+        # Suppression du fichier texte temporaire après l'envoi
+        if temp_file_path and os.path.exists(temp_file_path):
+            os.remove(temp_file_path)
 
 if __name__ == '__main__':
     app.run(debug=True)

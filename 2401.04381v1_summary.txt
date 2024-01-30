@@ -1,0 +1,6 @@
+Here we classify all topological spaces where all bijections to itself are
+homeomorphisms. As a consequence, we also classify all topological spaces where
+all maps to itself are continuous. Analogously, we classify all measurable
+spaces where all bijections to itself are measurable with measurable inverse.
+As a consequence, we also classify all measurable spaces where all maps to
+itself are measurable.
