@@ -1,7 +1,7 @@
 echo "Setting up ..."
 # Exécuter le script de configuration de MongoDB
 echo "Running MongoDB setup script..."
-.\setup_mongodb.ps1
+.\setup\setup_mongodb.ps1
 echo "MongoDB setup complete."
 
 # Créer l'environnement virtuel

@@ -4,7 +4,7 @@ echo "Setting up ..."
 # Exécuter le script de configuration de MongoDB
 echo "Running MongoDB setup script..."
 chmod +x setup_mongodb.sh
-./setup_mongodb.sh
+./setup/setup_mongodb.sh
 echo "MongoDB setup complete."
 
 # Créer l'environnement virtuel

@@ -30,20 +30,23 @@ sudo apt install python3.10-venv
 In order to set up the virtual environnement, install the requirements, run the flask app
 - On Windows/Powershell execute: 
 ```
-.\run_setup.ps1
+.\setup\run_setup.ps1
 ```
 - On Windows/WSL2 or on Linux, execute:
 ```
-./run_setup.sh
+./setup/run_setup.sh
 ```
 It will be running on http://127.0.0.1:5000
 
 ### Undo the set up
 - On Windows/Powershell execute: 
 ```
-.\undo_setup.ps1
+.\setup\undo_setup.ps1
 ```
 - On Windows/WSL2 or on Linux, execute:
 ```
-./undo_setup.sh
+./setup/undo_setup.sh
 ```
+### Run tests
+
+### Interact with API
