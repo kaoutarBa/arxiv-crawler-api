@@ -2,6 +2,15 @@ import requests
 import feedparser
 from pymongo import MongoClient
 
+import os
+
+# MongoDB configuration
+MONGO_URI = os.getenv("MONGO_URI")
+DB_NAME=os.getenv("DB_NAME")
+COLLECTION_NAME=os.getenv("COLLECTION_NAME")
+
+
+
 def fetch_arxiv_data(start_index, max_results):
     base_url = 'http://export.arxiv.org/api/query'
     params = {
@@ -38,9 +47,10 @@ def extract_metadata(entry):
     return metadata
 
 def save_to_database(metadata_list):
-    client = MongoClient('mongodb://localhost:27017/')
-    db = client['arxiv_metadata_db']
-    entries_collection = db['arxiv_metadata_entries']
+    
+    client = MongoClient(MONGO_URI)
+    db = client.get_database(DB_NAME)
+    entries_collection = db.get_collection(COLLECTION_NAME)
 
     for metadata in metadata_list:
         entries_collection.update_one(
@@ -51,9 +61,9 @@ def save_to_database(metadata_list):
 
     print(f"Metadata for {len(metadata_list)} entries saved to MongoDB.")
 
-def main():
+def crawler():
     start_index = 0
-    max_results = 20
+    max_results = 100
 
     arxiv_entries = fetch_arxiv_data(start_index, max_results)
 
@@ -61,5 +71,5 @@ def main():
         metadata_list = [extract_metadata(entry) for entry in arxiv_entries]
         save_to_database(metadata_list)
 
-if __name__ == "__main__":
-    main()
+#if __name__ == "__main__":
+    #main()

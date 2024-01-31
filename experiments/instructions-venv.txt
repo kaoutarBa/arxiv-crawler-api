@@ -11,7 +11,7 @@ venv\Scripts\Activate.ps1
 désactiver : 
 & .\venv\Scripts\Deactivate
 
-Remove the virtual environment using the command:rm -r .venv/
+Remove the virtual environment using the command:rm -r venv/
 
 formatting code : 
 pylint arxiv_crawler.py app.py

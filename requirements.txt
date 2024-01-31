@@ -1,4 +1,6 @@
 #pip==23.3.2
+#pip list
+##pip install -r requirements.txt
 
 astroid==3.0.2
 beautifulsoup4==4.12.3
@@ -39,6 +41,5 @@ soupsieve==2.5
 tomlkit==0.12.3
 urllib3==2.1.0
 Werkzeug==3.0.1
+python-dotenv==1.0.1
 
-#pip list
-##pip install -r requirements.txt

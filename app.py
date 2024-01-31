@@ -1,22 +1,32 @@
-from flask import Flask, request, jsonify, send_file
+from flask import Flask, request, jsonify, send_file, render_template
 from pymongo import MongoClient
+from dotenv import load_dotenv
+from metadata_crawler import crawler
 import os
 
-app = Flask(__name__)
 
-MONGO_URI = "mongodb://localhost:27017/"
-DB_NAME = "arxiv_metadata_db"
-COLLECTION_NAME = "arxiv_metadata_entries"
+app = Flask(__name__, template_folder='template')
+
+crawler()
+
+# Load environment variables from .env
+load_dotenv()
+
+# MongoDB configuration
+MONGO_URI = os.getenv("MONGO_URI")
+DB_NAME=os.getenv("DB_NAME")
+COLLECTION_NAME=os.getenv("COLLECTION_NAME")
 
 client = MongoClient(MONGO_URI)
-db = client[DB_NAME]
-entries_collection = db[COLLECTION_NAME]
+db = client.get_database(DB_NAME)
+entries_collection = db.get_collection(COLLECTION_NAME)
+
 
 # Route to upload a new article
 @app.route('/articles', methods=['POST'])
 def upload_article():
     try:
-        # Extract data from the request (assuming JSON data)
+        # Extract data from the request
         data = request.json
 
         # Validate that the required fields are present
@@ -90,6 +100,19 @@ def get_article_summary(id):
         # Suppression du fichier texte temporaire après l'envoi
         if temp_file_path and os.path.exists(temp_file_path):
             os.remove(temp_file_path)
+
+@app.route('/', methods=['GET'])
+def handle_welcome():
+    title  = "Welcome !"
+    message = "Enjoy interacting with the API in order to get metadata of articles from Arxiv !"
+    return render_template('template.html', title = title, message=message)
+
+@app.errorhandler(404)
+def page_not_found(error):
+    title  = "Oups !"
+    message = "Appartenlty there is an error when trying to get the request data! Make sure to make a correct query, Read the Manual"
+    return render_template('template.html', title = title, message=message), 404
+
 
 if __name__ == '__main__':
     app.run(debug=True)
