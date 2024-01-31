@@ -11,7 +11,7 @@ services:
   crawler:
     build:
       context: .
-    command: python metadata_crawler.py  # Utilisez le nom réel de votre script de crawling
+    command: python src/metadata_crawler.py  # Utilisez le nom réel de votre script de crawling
     depends_on:
       - mongo
     environment:

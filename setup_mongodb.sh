@@ -5,7 +5,8 @@
 #it is recommended to activate the WSL integration in Docker Desktop settings (Windows).
 
 #give execute permissions to the script
-#chmod +x run_mongodb.sh
+#on WSL /
+#chmod +x setup_mongodb.sh
 
 #to run this script
 #./setup_mongodb.sh
@@ -24,7 +25,7 @@ docker run -d -p 27017:27017 --name my-mongodb mongo
 # docker exec -it my-mongodb mongo
 
 # Provide instructions or additional commands if needed
-echo "MongoDB container is running. Use 'docker exec -it my-mongodb mongo' to access the MongoDB shell."
+echo "MongoDB container is running"
 
 # To stop and remove the container (Optional)
 # docker stop my-mongodb

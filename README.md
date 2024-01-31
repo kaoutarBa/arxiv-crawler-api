@@ -52,4 +52,10 @@ docker-compose up -d
 
 #### test
 
+### Run the Flask API
+It will be running on http://127.0.0.1:5000
+```
+$env:FLASK_APP="src.app"
+flask run
+```
 #### interact with the API

@@ -1,25 +1,28 @@
-from flask import Flask, request, jsonify, send_file, render_template
+from flask import Flask, request, jsonify, send_file, make_response
 from pymongo import MongoClient
 from dotenv import load_dotenv
-from metadata_crawler import crawler
+from src.metadata_crawler import crawler
 import os
-
-
-app = Flask(__name__, template_folder='template')
-
-crawler()
 
 # Load environment variables from .env
 load_dotenv()
 
 # MongoDB configuration
 MONGO_URI = os.getenv("MONGO_URI")
-DB_NAME=os.getenv("DB_NAME")
-COLLECTION_NAME=os.getenv("COLLECTION_NAME")
+DB_NAME = os.getenv("DB_NAME")
+COLLECTION_NAME = os.getenv("COLLECTION_NAME")
 
+# MongoDB connection
 client = MongoClient(MONGO_URI)
 db = client.get_database(DB_NAME)
 entries_collection = db.get_collection(COLLECTION_NAME)
+
+# Create Flask app instance
+app = Flask(__name__)
+app.config['JSONIFY_PRETTYPRINT_REGULAR'] = False
+
+# Perform metadata crawling
+crawler()
 
 
 # Route to upload a new article
@@ -60,7 +63,8 @@ def list_articles():
         # Fetch les articles de la MongoDB collection avec pagination
         articles = list(entries_collection.find({}, {'_id': 0}).skip(start_index).limit(per_page))
 
-        return jsonify({'articles': articles})
+        return jsonify({'articles': articles}),200, {'Content-Type': 'application/json; charset=utf-8'}
+
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
@@ -103,15 +107,20 @@ def get_article_summary(id):
 
 @app.route('/', methods=['GET'])
 def handle_welcome():
-    title  = "Welcome !"
+    title = "Welcome !"
     message = "Enjoy interacting with the API in order to get metadata of articles from Arxiv !"
-    return render_template('template.html', title = title, message=message)
+
+    content = f"<html><head><title>{title}</title></head><body><h1>{title}</h1><p>{message}</p></body></html>"
+    response = make_response(content)
+    return response
 
 @app.errorhandler(404)
 def page_not_found(error):
     title  = "Oups !"
-    message = "Appartenlty there is an error when trying to get the request data! Make sure to make a correct query, Read the Manual"
-    return render_template('template.html', title = title, message=message), 404
+    message = "Apparently, there is an error when trying to retrieve the request data!<br/> Make sure to issue a correct query.<br/> Read the Manual for guidance."
+    content = f"<html><head><title>{title}</title></head><body><h1>{title}</h1><p>{message}</p></body></html>"
+    response = make_response(content)
+    return response
 
 
 if __name__ == '__main__':
