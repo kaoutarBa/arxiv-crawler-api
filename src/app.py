@@ -19,7 +19,6 @@ entries_collection = db.get_collection(COLLECTION_NAME)
 
 # Create Flask app instance
 app = Flask(__name__)
-app.config['JSONIFY_PRETTYPRINT_REGULAR'] = False
 
 # Perform metadata crawling
 crawler()
@@ -63,7 +62,7 @@ def list_articles():
         # Fetch les articles de la MongoDB collection avec pagination
         articles = list(entries_collection.find({}, {'_id': 0}).skip(start_index).limit(per_page))
 
-        return jsonify({'articles': articles}),200, {'Content-Type': 'application/json; charset=utf-8'}
+        return jsonify({'articles': articles})
 
     except Exception as e:
         return jsonify({'error': str(e)}), 500

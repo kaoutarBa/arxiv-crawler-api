@@ -21,10 +21,7 @@ docker pull mongo
 # Run MongoDB Container
 docker run -d -p 27017:27017 --name my-mongodb mongo
 
-# Access MongoDB Container (Optional)
-# docker exec -it my-mongodb mongo
 
-# Provide instructions or additional commands if needed
 echo "MongoDB container is running"
 
 # To stop and remove the container (Optional)
