@@ -1,8 +1,9 @@
+import os
 from flask import Flask, request, jsonify, send_file, make_response
 from pymongo import MongoClient
 from dotenv import load_dotenv
 from src.metadata_crawler import crawler
-import os
+
 
 # Load environment variables from .env
 load_dotenv()
@@ -89,8 +90,7 @@ def describe_article(id):
 
         if article:
             return jsonify({'article': article})
-        else:
-            return jsonify({'error': 'Article not found'}), 404
+        return jsonify({'error': 'Article not found'}), 404
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
@@ -103,8 +103,7 @@ def get_article_summary(id):
         if article:
             # Return the summary as JSON response
             return jsonify({'summary': article['summary']})
-        else:
-            return jsonify({'error': f'Article with ID {id} not found'}), 404
+        return jsonify({'error': f'Article with ID {id} not found'}), 404
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
@@ -126,11 +125,6 @@ def page_not_found(error):
     content = f"<html><head><title>{title}</title></head><body><h1>{title}</h1><p>{message}</p></body></html>"
     response = make_response(content)
     return response
-
-
-
-
-
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -53,7 +53,6 @@ to run falsk app separately without redo the set up:
 ```
 flask run
 ```
-### Run tests
 
 ## Interact with API
 
