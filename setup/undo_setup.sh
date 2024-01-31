@@ -2,7 +2,7 @@
 
 # Désactiver l'environnement virtuel
 echo "Deactivating virtual environment..."
-deactivate
+source deactivate
 echo "Virtual environment deactivated."
 # Supprimer l'environnement virtuel
 echo "Removing virtual environment..."

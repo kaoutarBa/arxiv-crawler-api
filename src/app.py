@@ -17,6 +17,7 @@ client = MongoClient(MONGO_URI)
 db = client.get_database(DB_NAME)
 entries_collection = db.get_collection(COLLECTION_NAME)
 
+
 # Create Flask app instance
 app = Flask(__name__)
 
@@ -47,22 +48,34 @@ def upload_article():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-@app.route('/articles', methods=['GET'])
+
 @app.route('/articles/', methods=['GET'])
+@app.route('/articles', methods=['GET'])
 def list_articles():
     try:
-        # Définir la page par défaut et le nombre d'articles par page
-        #/articles?page=1&per_page=10
+        # Define default values for page and per_page
         page = int(request.args.get('page', 1))
-        per_page = int(request.args.get('per_page', 5))
+        per_page = int(request.args.get('per_page', 10))
 
-        # Calculer l'indice de départ pour la pagination
+        # Calculate the starting index for pagination
         start_index = (page - 1) * per_page
 
-        # Fetch les articles de la MongoDB collection avec pagination
-        articles = list(entries_collection.find({}, {'_id': 0}).skip(start_index).limit(per_page))
+        # Construct the query based on query parameters
+        query = {}
 
-        return jsonify({'articles': articles})
+        # Filter by category
+        category = request.args.get('category')
+        if category:
+            query['categories'] = category
+
+        # Filter by authors
+        authors = request.args.get('authors')
+        if authors:
+            query['authors'] = authors
+        # Fetch articles from the MongoDB collection with pagination and filters
+        articles = list(entries_collection.find(query, {'_id': 0}).skip(start_index).limit(per_page))
+
+        return jsonify({'articles': articles}), 200
 
     except Exception as e:
         return jsonify({'error': str(e)}), 500
@@ -81,28 +94,21 @@ def describe_article(id):
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-@app.route('/text/<id>.txt', methods=['GET'])
+@app.route('/summary/<id>', methods=['GET'])
 def get_article_summary(id):
     try:
-        # Recherche de l'article dans la base de données
+        # Fetch the article from the MongoDB collection
         article = entries_collection.find_one({'id': id}, {'_id': 0, 'summary': 1})
 
         if article:
-            # Création d'un fichier texte temporaire pour le résumé
-            temp_file_path = f'{id}_summary.txt'
-            with open(temp_file_path, 'w') as temp_file:
-                temp_file.write(article['summary'])
-
-            # Envoi du fichier en réponse
-            return send_file(temp_file_path, as_attachment=True)
+            # Return the summary as JSON response
+            return jsonify({'summary': article['summary']})
         else:
             return jsonify({'error': f'Article with ID {id} not found'}), 404
     except Exception as e:
         return jsonify({'error': str(e)}), 500
-    finally:
-        # Suppression du fichier texte temporaire après l'envoi
-        if temp_file_path and os.path.exists(temp_file_path):
-            os.remove(temp_file_path)
+
+            
 
 @app.route('/', methods=['GET'])
 def handle_welcome():
@@ -120,6 +126,10 @@ def page_not_found(error):
     content = f"<html><head><title>{title}</title></head><body><h1>{title}</h1><p>{message}</p></body></html>"
     response = make_response(content)
     return response
+
+
+
+
 
 
 if __name__ == '__main__':
